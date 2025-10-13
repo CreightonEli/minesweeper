@@ -1,42 +1,62 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+:root {
+  /* colors */
+  --color-bg: #000000;
+  --color-text: rgba(21, 255, 0, 0.8);
+  --color-text-dim: rgba(21, 255, 0, 0.15);
+
+  /* globals */
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  width: 900px;
+  margin: 100px auto 0;
+}
+
+/* Header Component */
+.header {
+  width: 100%;
+  box-sizing: border-box;
+  border: 3px solid var(--color-text);
+  padding: 20px 40px 0;
+}
+
+h1.title {
+  white-space: pre-wrap;
+  color: var(--color-text);
+  font-size: 16pt;
   text-align: center;
+  border: 6px double var(--color-text);
+  margin: auto;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.settings {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px auto;
+  width: 400px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.settings p {
+  margin: 0;
+  padding: 15px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.settings button {
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  padding: 15px;
+  border: 1px solid var(--color-text);
+  cursor: pointer;
+}
+.settings button:hover {
+  background-color: var(--color-text-dim);
 }
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.settings button.active {
+  color: var(--color-bg);
+  background-color: var(--color-text);
 }
