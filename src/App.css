@@ -1,36 +1,65 @@
 :root {
   /* colors */
-  --color-bg: #000000;
+  --color-bg: #061600;
   --color-text: rgba(21, 255, 0, 0.8);
   --color-text-dim: rgba(21, 255, 0, 0.15);
+  opacity: 0;
+  animation: fade-in 1s 1s forwards;
+}
 
-  /* globals */
+::selection {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
   color: var(--color-text);
-  background-color: var(--color-bg);
+}
+
+body {
+  height: 100vh;
+  margin: 0;
+  padding: 20px 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  background-image: radial-gradient(circle, transparent, rgba(0, 0, 0, 1));
+}
+
+#root {
+  margin: auto;
 }
 
 .app {
   display: flex;
   flex-direction: column;
   width: 900px;
-  margin: 100px auto 0;
+  margin: 0 auto 0;
 }
 
 /* Header Component */
 .header {
   width: 100%;
   box-sizing: border-box;
-  border: 3px solid var(--color-text);
-  padding: 20px 40px 0;
+  border: 2px solid var(--color-text);
+  padding: 20px 20px 0;
+  box-shadow: 1px 1px 20px var(--color-text-dim), 1px 1px 20px var(--color-text-dim) inset;
 }
 
 h1.title {
-  white-space: pre-wrap;
   color: var(--color-text);
   font-size: 16pt;
   text-align: center;
   border: 6px double var(--color-text);
+  border-radius: 2rem;
   margin: auto;
+  padding: 0 100px;
+  width: fit-content;
+  box-shadow: 1px 1px 20px var(--color-text-dim), 1px 1px 20px var(--color-text-dim) inset;
 }
 
 .settings {
@@ -45,18 +74,236 @@ h1.title {
   padding: 15px;
 }
 
-.settings button {
+.header button {
   color: var(--color-text);
   background-color: var(--color-bg);
-  padding: 15px;
+  height: 40px;
+  margin: auto;
+  padding: 0 15px;
   border: 1px solid var(--color-text);
   cursor: pointer;
+  box-shadow: 1px 1px 20px var(--color-text-dim), 1px 1px 20px var(--color-text-dim) inset;
+  transition: 300ms;
 }
-.settings button:hover {
+.header button:hover {
   background-color: var(--color-text-dim);
 }
+.header button:active {
+  background-color: var(--color-text);
+  color: var(--color-bg);
+}
 
-.settings button.active {
+.header button.active {
   color: var(--color-bg);
   background-color: var(--color-text);
+}
+
+.header button span.icon {
+  font-size: 15pt;
+  line-height: 15pt;
+  vertical-align: middle;
+  margin: auto;
+}
+.header button span.text {
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+.status {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px auto;
+  padding: 10px 15px 0;
+  border-top: 2px solid var(--color-text);
+}
+.status span#mineNum {
+  margin-right: 70px;
+}
+
+.win-box, .lose-box {
+  margin: 0 auto;
+  /* display: none; */
+  text-align: center;
+  height: 0px;
+  overflow: hidden;
+  transition: 300ms;
+}
+.win-box.show {
+  margin: 0 auto 20px;
+  display: block;
+  border: 2px solid var(--color-text);
+  background-color: var(--color-text-dim);
+  /* filter: drop-shadow(0px 0px .5px var(--color-text)); */
+  box-shadow: 1px 1px 20px var(--color-text-dim), 1px 1px 20px var(--color-text-dim) inset;
+  height: auto;
+}
+.lose-box.show {
+  margin: 0 auto 20px;
+  display: block;
+  color: red;
+  border: 2px solid red;
+  background-color: rgba(255, 0, 0, 0.15);
+  height: auto;
+  /* filter: drop-shadow(0px 0px 1px rgba(255, 0, 0, 0.4)); */
+  box-shadow: 1px 1px 20px rgba(255, 0, 0, 0.4), 1px 1px 20px rgba(255, 0, 0, 0.4) inset;
+}
+
+/* Board Component */
+.board {
+  width: 100%;
+  box-sizing: border-box;
+  /* border: 2px solid var(--color-text); */
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.board-row {
+  display: flex;
+  gap: 2px;
+  margin: auto;
+}
+.cell {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--color-text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14pt;
+  cursor: pointer;
+  user-select: none;
+  transition: 500ms;
+  box-shadow: 1px 1px 20px var(--color-text-dim), 1px 1px 20px var(--color-text-dim) inset;
+}
+.cell:hover {
+  background-color: var(--color-text-dim);
+}
+.cell:active {
+  background-color: var(--color-text);
+  color: var(--color-bg);
+}
+.cell.revealed {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-text-dim);
+  cursor: default;
+  box-shadow: none;
+}
+.cell.mine {
+  color: red;
+  border: 1px solid red;
+  box-shadow: 1px 1px 20px rgba(255, 0, 0, 0.4), 1px 1px 20px rgba(255, 0, 0, 0.4) inset;
+}
+.cell.flagged {
+  color: orange;
+}
+
+/* larger cells for Easy difficulty (difficulty-0) */
+.board.difficulty-0 .cell {
+  width: 32px;
+  height: 32px;
+  font-size: 18pt;
+}
+
+/* optional: slightly adjust row gap so layout stays centered */
+.board.difficulty-0 .board-row {
+  gap: 4px;
+}
+
+/* Footer Component */
+.footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  width: 900px;
+  border: 2px solid var(--color-text);
+  box-shadow: 1px 1px 20px var(--color-text-dim), 1px 1px 20px var(--color-text-dim) inset;
+}
+.footer p {
+  margin: auto auto auto 0;
+  text-align: center;
+}
+.footer a {
+  margin: auto 0 auto auto;
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 18pt;
+  display: block;
+  text-align: center;
+  transition: 300ms;
+  filter: drop-shadow(0 0 3px var(--color-text));
+}
+.footer a:hover {
+  color: orange;
+  filter: drop-shadow(0 0 6px orange);
+}
+
+/* animations */
+@keyframes fade-in {
+  from { 
+    opacity: 0;
+    transform: translateY(-300px) scale(.75); 
+    }
+  to { opacity: 1; 
+    transform: translateY(0px) scale(1); 
+    }
+}
+
+/* stolen lol */
+
+.scanlines {
+    overflow: hidden;
+    position: relative;
+}
+.scanlines:before,
+.scanlines:after {
+    display: block;
+    pointer-events: none;
+    content: "";
+    position: absolute;
+}
+.scanlines:before {
+    width: 100%;
+    height: 2px;
+    z-index: 2147483649;
+    background: rgba(50, 205, 50, 0.2);
+    opacity: 0.75;
+    animation: scanline 6s linear infinite;
+}
+.scanlines:after {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2147483648;
+    background: linear-gradient(
+        to bottom,
+        transparent 50%,
+        rgba(0, 0, 0, 0.1) 51%
+    );
+    background-size: 100% 5px;
+    animation: scanlines 1s steps(60) infinite;
+}
+
+/* ANIMATE UNIQUE SCANLINE */
+@keyframes scanline {
+    0% {
+        transform: translate3d(0, 200000%, 0);
+    }
+}
+@keyframes scanlines {
+    0% {
+        background-position: 0 50%;
+    }
+}
+
+@keyframes tilt-n-move-shaking {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(5px, 5px) rotate(5deg); }
+  50% { transform: translate(0, 0) rotate(0eg); }
+  75% { transform: translate(-5px, 5px) rotate(-5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
 }
