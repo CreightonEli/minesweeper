@@ -3,8 +3,8 @@
   --color-bg: #061600;
   --color-text: rgba(21, 255, 0, 0.8);
   --color-text-dim: rgba(21, 255, 0, 0.15);
-  opacity: 0;
-  animation: fade-in 1s 1s forwards;
+  /* opacity: 0;
+  animation: fade-in 1s 1s forwards cubic-bezier(0.075, 0.82, 0.165, 1); */
 }
 
 ::selection {
@@ -28,7 +28,8 @@ body {
   display: flex;
   flex-direction: column;
   background: var(--color-bg);
-  background-image: radial-gradient(circle, transparent, rgba(0, 0, 0, 1));
+  background-image: radial-gradient(circle, transparent, rgb(2, 10, 0));
+  overflow: scroll;
 }
 
 #root {
@@ -153,7 +154,6 @@ h1.title {
 .board {
   width: 100%;
   box-sizing: border-box;
-  /* border: 2px solid var(--color-text); */
   margin: 20px 0;
   display: flex;
   flex-direction: column;
@@ -176,6 +176,7 @@ h1.title {
   user-select: none;
   transition: 500ms;
   box-shadow: 1px 1px 20px var(--color-text-dim), 1px 1px 20px var(--color-text-dim) inset;
+  animation: fade-in 3s forwards cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 .cell:hover {
   background-color: var(--color-text-dim);
@@ -205,11 +206,11 @@ h1.title {
   height: 32px;
   font-size: 18pt;
 }
-
-/* optional: slightly adjust row gap so layout stays centered */
+/* slightly adjust row gap so layout stays centered */
 .board.difficulty-0 .board-row {
   gap: 4px;
 }
+
 
 /* Footer Component */
 .footer {
@@ -245,11 +246,12 @@ h1.title {
 /* animations */
 @keyframes fade-in {
   from { 
-    opacity: 0;
-    transform: translateY(-300px) scale(.75); 
+    /* opacity: 0; */
+    transform: scale(.95); 
     }
-  to { opacity: 1; 
-    transform: translateY(0px) scale(1); 
+  to { 
+    /* opacity: 1;  */
+    transform: scale(1);
     }
 }
 
