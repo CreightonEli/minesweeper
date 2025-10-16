@@ -1,4 +1,3 @@
-import React from 'react'
 type HeaderProps = {
   difficulty: number,
   setDifficulty: (difficulty: number) => void
