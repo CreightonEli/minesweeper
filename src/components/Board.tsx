@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef, Dispatch, SetStateAction } from "react"
+import { useEffect, useState, useRef } from "react"
+import type { Dispatch, SetStateAction } from "react"
 import Cell from "./Cell"
 
 type CellState = {
@@ -25,11 +26,15 @@ const sizeMap = [
   { rows: 16, cols: 30 }   // Hard (480 cells / 99 mines)
 ]
 
-function Board({difficulty = 0, mines = 10, flags = 0, setFlags, setTime, setGameStatus, gameStatus = 0}: BoardProps) {
+function Board({
+  difficulty = 0,
+  mines = 10,
+  setFlags,
+  setTime,
+  setGameStatus,
+  gameStatus = 0, // default to playing
+}: BoardProps) {
   const { rows, cols } = sizeMap[difficulty]
-  const [grid, setGrid] = useState<CellState[][]>([])
-  const [firstClick, setFirstClick] = useState(true)
-  const timerRef = useRef<number | null>(null)
 
   // Create an empty grid (no mines, zero adjacents)
   const createEmptyGrid = (rCount: number, cCount: number): CellState[][] =>
@@ -38,9 +43,14 @@ function Board({difficulty = 0, mines = 10, flags = 0, setFlags, setTime, setGam
         isMine: false,
         adjacentMines: 0,
         isRevealed: false,
-        isFlagged: false
+        isFlagged: false,
       }))
     )
+
+  // initialize grid for current difficulty
+  const [grid, setGrid] = useState<CellState[][]>(() => createEmptyGrid(rows, cols))
+  const [firstClick, setFirstClick] = useState(true)
+  const timerRef = useRef<number | null>(null)
 
   // Place mines excluding a set of forbidden positions (1D indices)
   const placeMines = (baseGrid: CellState[][], mineCount: number, forbidden: Set<number>) => {
@@ -64,7 +74,7 @@ function Board({difficulty = 0, mines = 10, flags = 0, setFlags, setTime, setGam
     const directions = [
       [-1, -1], [-1, 0], [-1, 1],
       [0, -1],          [0, 1],
-      [1, -1], [1, 0], [1, 1]
+      [1, -1], [1, 0], [1, 1],
     ]
     for (let r = 0; r < rCount; r++) {
       for (let c = 0; c < cCount; c++) {
@@ -93,7 +103,7 @@ function Board({difficulty = 0, mines = 10, flags = 0, setFlags, setTime, setGam
     }
     if (setTime) setTime(0)
     if (setGameStatus) setGameStatus(0)
-  }, [mines, rows, cols])
+  }, [mines, rows, cols, setTime, setGameStatus])
 
   // cleanup on unmount
   useEffect(() => {
@@ -107,6 +117,7 @@ function Board({difficulty = 0, mines = 10, flags = 0, setFlags, setTime, setGam
 
   // Flood reveal BFS starting from (row, col)
   const floodReveal = (newGrid: CellState[][], startR: number, startC: number) => {
+    if (newGrid.length === 0) return
     const rCount = newGrid.length
     const cCount = newGrid[0].length
     const visited = Array.from({ length: rCount }, () => Array(cCount).fill(false))
@@ -114,7 +125,7 @@ function Board({difficulty = 0, mines = 10, flags = 0, setFlags, setTime, setGam
     const directions = [
       [-1, -1], [-1, 0], [-1, 1],
       [0, -1],          [0, 1],
-      [1, -1], [1, 0], [1, 1]
+      [1, -1], [1, 0], [1, 1],
     ]
 
     while (queue.length) {
@@ -143,6 +154,7 @@ function Board({difficulty = 0, mines = 10, flags = 0, setFlags, setTime, setGam
   }
 
   const checkWin = (currentGrid: CellState[][]) => {
+    if (!currentGrid || currentGrid.length === 0) return false
     for (let r = 0; r < currentGrid.length; r++) {
       for (let c = 0; c < currentGrid[0].length; c++) {
         if (!currentGrid[r][c].isMine && !currentGrid[r][c].isRevealed) return false
@@ -203,8 +215,7 @@ function Board({difficulty = 0, mines = 10, flags = 0, setFlags, setTime, setGam
         }
       }
       stopTimer()
-      // set parent game status first so Header updates immediately
-      if (setGameStatus) setGameStatus(2)
+      if (setGameStatus) setGameStatus(2) // 2 = lost
       setGrid(workingGrid)
       return
     }
@@ -224,7 +235,7 @@ function Board({difficulty = 0, mines = 10, flags = 0, setFlags, setTime, setGam
         }
       }
       stopTimer()
-      if (setGameStatus) setGameStatus(1)
+      if (setGameStatus) setGameStatus(1) // 1 = won
     }
 
     setGrid(workingGrid)
@@ -242,7 +253,7 @@ function Board({difficulty = 0, mines = 10, flags = 0, setFlags, setTime, setGam
       setFlags(prev => Math.max(0, prev + (willBeFlagged ? 1 : -1)))
     }
     setGrid(newGrid)
-    // optional: check win by flags (not necessary if checking revealed cells)
+    // optional: check win by revealed cells
     if (checkWin(newGrid)) {
       stopTimer()
       if (setGameStatus) setGameStatus(1)
@@ -254,7 +265,7 @@ function Board({difficulty = 0, mines = 10, flags = 0, setFlags, setTime, setGam
       {grid.map((row, rIdx) => (
         <div key={rIdx} className="board-row">
           {row.map((cell, cIdx) => (
-            <Cell 
+            <Cell
               key={cIdx}
               row={rIdx}
               col={cIdx}

@@ -47,7 +47,6 @@ function App() {
         key={resetKey}
         difficulty={difficulty}
         mines={mines}
-        flags={flags}
         setFlags={setFlags}
         setTime={setTime}
         setGameStatus={setGameStatus}
